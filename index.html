@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador AR - ANDEILSSON PAGINAS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #2196F3;
+            outline: none;
+        }
+
+        .dimensions-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .dimensions-group input {
+            width: calc(33.33% - 10px);
+        }
+
+        button {
+            background: #2196F3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        .result-section {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            align-items: flex-start;
+        }
+
+        .qr-container {
+            flex: 1;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .instructions {
+            flex: 1;
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #qrcode {
+            margin: 20px auto;
+        }
+
+        .dimensions-display {
+            margin-top: 15px;
+            padding: 8px;
+            background: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de QR Code para Visualização AR</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="productUrl">URL do Modelo 3D (.glb):</label>
+                <input type="text" id="productUrl" placeholder="https://seu-modelo-3d.glb">
+            </div>
+            
+            <div class="input-group">
+                <label for="productName">Nome do Produto:</label>
+                <input type="text" id="productName" placeholder="Ex: Controle Xbox">
+            </div>
+            
+            <div class="input-group">
+                <label>Dimensões do Produto (cm):</label>
+                <div class="dimensions-group">
+                    <input type="number" id="width" placeholder="Largura">
+                    <input type="number" id="height" placeholder="Altura">
+                    <input type="number" id="depth" placeholder="Profundidade">
+                </div>
+            </div>
+            
+            <button onclick="generateARQRCode()">Gerar QR Code AR</button>
+        </div>
+
+        <div class="result-section">
+            <div class="qr-container">
+                <h3>Escaneie para ver em AR</h3>
+                <div id="qrcode"></div>
+                <div class="dimensions-display" id="dimensionsDisplay"></div>
+            </div>
+
+            <div class="instructions">
+                <h3>Como usar:</h3>
+                <ol>
+                    <li>Abra a câmera do seu celular</li>
+                    <li>Aponte para o QR Code</li>
+                    <li>Toque no link que aparecer</li>
+                    <li>Posicione o produto onde desejar</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let qrInstance = null;
+
+        function generateARQRCode() {
+            const productUrl = document.getElementById('productUrl').value;
+            const productName = document.getElementById('productName').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const depth = document.getElementById('depth').value;
+
+            // Criar URL para a página AR com parâmetros
+            const arViewerUrl = `ar-viewer.html?model=${encodeURIComponent(productUrl)}&name=${encodeURIComponent(productName)}&width=${width}&height=${height}&depth=${depth}`;
+
+            // Atualizar display de dimensões
+            document.getElementById('dimensionsDisplay').textContent = 
+                `Dimensões: ${width}cm x ${height}cm x ${depth}cm`;
+
+            // Gerar QR Code
+            if (qrInstance) {
+                qrInstance.clear();
+                qrInstance.makeCode(arViewerUrl);
+            } else {
+                qrInstance = new QRCode(document.getElementById("qrcode"), {
+                    text: arViewerUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
+    </script>
+</body>
+</html>
